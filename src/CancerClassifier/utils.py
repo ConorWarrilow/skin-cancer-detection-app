@@ -3,15 +3,17 @@ import yaml
 import json
 import joblib
 import base64
-
+import numpy as np
 from box.exceptions import BoxValueError
 from ensure import ensure_annotations
 from box import ConfigBox
 from pathlib import Path
 from typing import Any
-
+import h5py
 from CancerClassifier import logger
-
+from PIL import Image
+from io import BytesIO
+from torch.utils.data import Dataset
 
 
 @ensure_annotations
@@ -141,3 +143,48 @@ def decodeImage(imgstring, fileName):
 def encodeImageIntoBase64(croppedImagePath):
     with open(croppedImagePath, "rb") as f:
         return base64.b64encode(f.read())
+    
+
+
+
+
+
+
+
+def explore_directory(path):
+    for root, dirs, files in os.walk(path):
+        print(f"Current directory: {root}")
+        print("Subdirectories:")
+        for dir in dirs:
+            print(f"  {dir}")
+        print("Files:")
+        for file in files:
+            print(f"  {file}")
+        print()
+
+
+
+
+class ISICDataset(Dataset):
+    def __init__(self, df, file_hdf, transforms=None):
+        self.df = df
+        self.fp_hdf = h5py.File(file_hdf, mode="r")
+        self.isic_ids = df['isic_id'].values
+        self.targets = df['target'].values
+        self.transforms = transforms
+        
+    def __len__(self):
+        return len(self.isic_ids)
+    
+    def __getitem__(self, index):
+        isic_id = self.isic_ids[index]
+        img = np.array(Image.open(BytesIO(self.fp_hdf[isic_id][()])) )
+        target = self.targets[index]
+        
+        if self.transforms:
+            img = self.transforms(image=img)["image"]
+            
+        return {
+            'image': img,
+            'target': target,
+        }

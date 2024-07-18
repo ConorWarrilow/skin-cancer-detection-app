@@ -169,4 +169,5 @@ workflow.md
 research/
 secret.py
 mlruns/
+data/
 
