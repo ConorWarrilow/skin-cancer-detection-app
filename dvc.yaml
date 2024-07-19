@@ -1,0 +1,23 @@
+data_params:
+  BASE_FOLD: 0
+  N_FOLDS: 4
+
+
+dataloader_params:
+  TRAIN_BATCH_SIZE: 32
+  VALID_BATCH_SIZE: 32
+  IMG_SIZE: 384
+
+
+base_model_params:
+  MODEL_NAME: "tf_efficientnet_b0_ns"
+  CHECKPOINT_PATH: None
+
+model_training_params:
+  SCHEDULER: "CosineAnnealingLR"
+  EPOCHS: 10
+  LEARNING_RATE: 1e-4
+  MIN_LR: 1e-6
+  WEIGHT_DECAY: 1e-6
+  T_MAX: 500
+  N_ACCUMULATE: 1

@@ -170,4 +170,7 @@ research/
 secret.py
 mlruns/
 data/
+AUROC*
+history.csv
+params.py
 
